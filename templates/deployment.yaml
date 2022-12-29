@@ -19,21 +19,31 @@ spec:
         app.kubernetes.io/name: {{ include "guacamole.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      initContainers:
+        - name: init-create-db-user
+          image: postgres:12
+          env:
+            - name: PGPASSWORD
+              value: StrongPassword
+          command:
+            - sh
+            - -c
+            - psql -h 200.1.154.234 -U postgres -c "DO E'BEGIN \n CREATE ROLE \"rails-app\" WITH LOGIN CREATEDB CREATEROLE PASSWORD \'very_secret!\'; \n EXCEPTION WHEN OTHERS THEN \n NULL; \n END;';"
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.guacamole.image.repository }}:{{ .Values.guacamole.image.tag }}"
           imagePullPolicy: {{ .Values.guacamole.image.pullPolicy }}
           env:
-            - name: MYSQL_HOSTNAME
-              value: "{{ .Release.Name }}-mysql"
-            - name: MYSQL_DATABASE
+            - name: POSTGRES_HOST
+              value: "{{ .Release.Name }}-postgresql-0"
+            - name: POSTGRES_HOSTNAME
+              value: "{{ .Release.Name }}-postgresql-0"
+            - name: POSTGRES_DATABASE
               value: "guacamole_db"
-            - name: MYSQL_USER
-              value: "root"
-            - name: MYSQL_PASSWORD
-              value: "{{ .Values.mysql.mysqlRootPassword }}"
-            - name: MYSQL_PORT
-              value: "{{ .Values.guacamole.mysql.MYSQL_PORT }}"
+            - name: POSTGRES_USER
+              value: "guacamole_user"
+            - name: POSTGRES_PASSWORD
+              value: "guacamole_postgresql"
             - name: GUACD_HOSTNAME
               value: "{{ .Values.guacd.nameOverride }}"
             - name: GUACD_PORT
