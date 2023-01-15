@@ -28,7 +28,7 @@ spec:
           command:
             - sh
             - -c
-            - psql -h 200.1.154.234 -U postgres -c "DO E'BEGIN \n CREATE ROLE \"rails-app\" WITH LOGIN CREATEDB CREATEROLE PASSWORD \'very_secret!\'; \n EXCEPTION WHEN OTHERS THEN \n NULL; \n END;';"
+            - psql -h 200.1.154.234 -U postgres -c "DO E'BEGIN \n CREATE ROLE \"ariel-app\" WITH LOGIN CREATEDB CREATEROLE PASSWORD \'very_secret!\'; \n EXCEPTION WHEN OTHERS THEN \n NULL; \n END;';"
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.guacamole.image.repository }}:{{ .Values.guacamole.image.tag }}"
