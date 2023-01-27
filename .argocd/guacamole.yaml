@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guacamole
+  namespace: argocd
+  finalizers: ["resources-finalizer.argocd.argoproj.io"]
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:kr1ps/kube-guacamole.git
+    targetRevision: HEAD
+    path: ./helm
+    helm:
+      releaseName: guacamole
+      valueFiles:
+      - values.yaml
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated: {}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: guacamole
