@@ -24,7 +24,7 @@ ALTER USER "guacadmin" with password 'password';
 ```
 
 
-You can get it up ang running by:
+You can get it up and running by:
 1. git clone https://github.com/kr1ps/kube-guacamole.git
 2. cd helm
 3. helm install . -f values.yaml --name=guacamole --namespace=guacamole
