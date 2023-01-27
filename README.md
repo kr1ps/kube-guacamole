@@ -16,14 +16,15 @@ Requirement:
 
 Postgresql query to modify an user to change encryption to md5
 
-```SHOW password_encryption;
+```
+SHOW password_encryption;
 SELECT rolpassword from pg_authid where rolname = 'guacadmin';
 SET password_encryption  = 'md5';
-ALTER USER "guacadmin" with password 'password';```
+ALTER USER "guacadmin" with password 'password';
+```
 
 
 You can get it up ang running by:
-
 1. git clone https://github.com/kr1ps/kube-guacamole.git
 2. cd helm
 3. helm install . -f values.yaml --name=guacamole --namespace=guacamole
