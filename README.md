@@ -1,4 +1,4 @@
-# kube-guacamole# Apache guacamole
+# Apache guacamole
 
 This chart its a fork fodified to work on latest k8s version from this repo https://github.com/halkeye-helm-charts/guacamole.
 
