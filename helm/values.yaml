@@ -2,113 +2,90 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-guacamole:
-  replicaCount: 1
+replicaCount: 1
 
+guacamole:
   image:
     repository: guacamole/guacamole
-    tag: 1.1.0
+    tag: "{{ .Chart.AppVersion }}"
     pullPolicy: IfNotPresent
-
-  nameOverride: ""
-  fullnameOverride: ""
-
-  service:
-    type: ClusterIP
-    port: 80
-
-  mysql:
-    MYSQL_HOSTNAME: guacamole-mysql
-    MYSQL_PORT: 3306
-
-  ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: "nginx"
-      ingress.kubernetes.io/ssl-redirect: "true"
-      cert-manager.io/cluster-issuer: letsencrypt-clusterissuer-latest
-    hosts:
-      - host: guacamole.kr1ps.com
-        paths:
-          - path: /
-            pathType: Prefix
-    tls:
-    - hosts:
-        - guacamole.kr1ps.com
-      secretName: guacamole-tls
-
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
-
-  persistence:
-    plugins:
-      enabled: true
-      accessMode: ReadWriteOnce
-      size: 8Gi
-      storageClass: longhorn
-      # existingClaim: existing-pvc
-
-  configurationFiles:
-    guacamole.properties: |-
-      enable-environment-properties: true
-      # # OIDC properties
-      # openid-authorization-endpoint:
-      # openid-jwks-endpoint:
-      # openid-issuer:
-      # openid-client-id: guacamole
-      # openid-redirect-uri:
-      # openid-username-claim-type: username
-      # openid-scope: openid email profile
-      # openid-allowed-clock-skew: 500
-
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  # Change this to ROOT to get rid of the /guacamole prefix
-  webapp_context: guacamole
 
 guacd:
-  replicaCount: 1
-
   image:
     repository: guacamole/guacd
-    tag: 1.1.0
+    tag: "{{ .Chart.AppVersion }}"
     pullPolicy: IfNotPresent
 
-  nameOverride: "guacd"
-  fullnameOverride: "guacd"
+dbcreation:
+  image:
+    repository: bitnami/postgresql
+    tag: 11.7.0-debian-10-r9
+    pullPolicy: IfNotPresent
 
-  service:
-    type: ClusterIP
-    port: 4822
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
 
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
 
-  nodeSelector: {}
+podSecurityContext: {}
+  # fsGroup: 2000
 
-  tolerations: []
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
 
-  affinity: {}
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-clusterissuer-latest
+    nginx.ingress.kubernetes.io/app-root: /guacamole
+  hosts:
+    - host: guacamole.kr1ps.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+  - hosts:
+      - guacamole.kr1ps.com
+    secretName: guacamole-tls
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+postgres:
+  hostname: "200.1.154.234"
+  port: "5432"
+  database: "guacamole"
+  user: "guacadmin"
+  password: "StrongPassword"

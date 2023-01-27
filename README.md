@@ -1,17 +1,30 @@
 # kube-guacamole# Apache guacamole
 
-A helm chart for apache guacamole. 
+This chart its a fork fodified to work on latest k8s version from this repo https://github.com/halkeye-helm-charts/guacamole.
 
 This helm chart provides a complete setup of:
 
 - Guacamole server
 - Guacd Proxy
-- MySQL server
+
+
+Requirement:
+
+- postgresql database
+- database <database_name> created
+- login with md5 password encript
+
+Postgresql query to modify an user to change encryption to md5
+
+```SHOW password_encryption;
+SELECT rolpassword from pg_authid where rolname = 'guacadmin';
+SET password_encryption  = 'md5';
+ALTER USER "guacadmin" with password 'password';```
+
 
 You can get it up ang running by:
 
-1. git clone https://github.com/prabhatsharma/apache-guacamole-helm-chart
-2. cd apache-guacamole-helm-chart
+1. git clone https://github.com/kr1ps/kube-guacamole.git
+2. cd helm
 3. helm install . -f values.yaml --name=guacamole --namespace=guacamole
-4. kubectl --namespace guacamole port-forward svc/guacamole 8080:80
-5. visit http://localhost:8080/guacamole in your browser. Default creds are guacadmin/guacadmin
+5. visit http://guacamole.yourdomain.com in your browser. Default creds are guacadmin/guacadmin

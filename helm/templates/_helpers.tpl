@@ -30,3 +30,27 @@ Create chart name and version as used by the chart label.
 {{- define "guacamole.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "guacamole.labels" -}}
+app.kubernetes.io/name: {{ include "guacamole.name" . }}
+helm.sh/chart: {{ include "guacamole.chart" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "guacamole.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "guacamole.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}

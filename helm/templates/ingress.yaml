@@ -1,23 +1,20 @@
-{{- if .Values.guacamole.ingress.enabled -}}
+{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "guacamole.fullname" . -}}
-{{- $ingressPath := .Values.guacamole.ingress.path -}}
+{{- $svcPort := .Values.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    app.kubernetes.io/name: {{ include "guacamole.name" . }}
-    helm.sh/chart: {{ include "guacamole.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- with .Values.guacamole.ingress.annotations }}
+{{ include "guacamole.labels" . | indent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-{{ toYaml . | indent 4 }}
-{{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-{{- if .Values.guacamole.ingress.tls }}
+{{- if .Values.ingress.tls }}
   tls:
-  {{- range .Values.guacamole.ingress.tls }}
+  {{- range .Values.ingress.tls }}
     - hosts:
       {{- range .hosts }}
         - {{ . | quote }}
@@ -26,7 +23,7 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.guacamole.ingress.hosts }}
+  {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
@@ -35,9 +32,9 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ $fullName }}
+                name: {{ $fullName }}-guacamole
                 port:
-                  number: 80
+                  number: {{ $svcPort }}
         {{- end }}
   {{- end }}
 {{- end }}
